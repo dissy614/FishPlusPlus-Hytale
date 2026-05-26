@@ -6,6 +6,7 @@
 #include "Features/ConfigHandler.h"
 #include "Features/FeatureHandler.h"
 #include "Features/ActualFeatures/RemoteChest.h"
+#include "Features/ActualFeatures/ChatBlock.h"
 
 #pragma optimize("", off)
 #pragma runtime_checks("", off)
@@ -104,7 +105,22 @@ void __fastcall Hooks::hkOnChat(uint64_t instance, HytaleString* chatString) {
     //Util::log("Chat message: %s", message.c_str());
 
     if (!message.starts_with('!')) {
-        Hooks::oOnChat(instance, chatString);
+		// This is a non-fish command.  Is 'chatblock text' enabled?
+		const auto& blockChatTxt = FeatureHandler::GetFeatureFromName<ChatBlock>("Chat Block");
+		if (blockChatTxt->IsActive()) {
+			// YES chat send blocking
+			// Is this a client slash command?
+			if (message.starts_with('/')) {
+				// Is chat block slash commands enabled?
+				bool blockChatCmd = static_cast<ToggleSetting*>(blockChatTxt->GetSettingFromName("Block Slash Cmds"))->GetValue();
+				if (blockChatCmd) return;
+				// NO, slash command block, send command on its way
+				Hooks::oOnChat(instance, chatString);
+			}
+		} else {
+			// NO chat send blocking, send text on its way
+			Hooks::oOnChat(instance, chatString);
+		}
         return;
     }
 
