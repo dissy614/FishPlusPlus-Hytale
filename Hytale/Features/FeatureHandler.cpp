@@ -20,6 +20,7 @@
 #include "ActualFeatures/Gamemode.h"
 #include "ActualFeatures/RemoteChest.h"
 #include "ActualFeatures/NoDeath.h"
+#include "ActualFeatures/ChatBlock.h"
 #include "ActualFeatures/Hud.h"
 #include "ActualFeatures/Hud/WaterMark.h"
 #include "ActualFeatures/Hud/Position.h"
@@ -59,6 +60,7 @@ void FeatureHandler::Init() {
 
 	InitFeature(std::make_unique<Hud>(), "Client");
 	InitFeature(std::make_unique<MainMenuEffect>(), "Client");
+	InitFeature(std::make_unique<ChatBlock>(), "Client");
 
 
 	//HUD Features
